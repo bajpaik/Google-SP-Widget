@@ -1,0 +1,122 @@
+<BR><BR><BR><BR><BR><BR><BR><BR><div class="panel b" ng-init="registrationInit()">
+   <!-- header -->
+   <div class="panel-heading bg-primary">
+      <h1 class="panel-title">${Customer Registration}</h1>
+   </div>
+   <!-- body -->
+   <div class="panel-body" >
+      <form ng-submit="$event.preventDefault()" name="registrationForm" class="form-horizontal">
+         <!-- First Name input-->
+         <div class="form-group">
+            <label class="col-sm-3 control-label" for="first_name">${First Name}</label>
+            <div class="col-sm-6">
+               <input ng-model="c.first_name" id="first_name" name="first_name" placeholder="${First Name}" class="form-control">
+            </div>
+         </div>
+         <!-- Last Name input-->
+         <div class="form-group">
+            <label class="col-sm-3 control-label" for="last_name">${Last Name}</label>
+            <div class="col-sm-6">
+               <input ng-model="c.last_name" id="last_name" name="last_name" placeholder="${Last Name}" class="form-control" />
+              
+            </div>
+         </div>
+         <!-- Business Email input-->
+         <div class="form-group">
+            <label class="col-sm-3 control-label" for="email">Email</label>
+            <div class="col-sm-6">
+               <input ng-model="c.email" type="email" id="email" name="email" placeholder="Email" class="form-control" />
+              <p ng-show="registrationForm.email.$invalid" style="color:tomato;">
+                Please enter valid email
+              </p>
+            </div>
+         </div>
+		 <!-- New Drop-down input-->
+      <div class="form-group">
+    <label class="col-sm-3 control-label" for="new_question">What would you like to do on the portal?</label>
+     <div class="col-sm-6">
+         <select ng-model="c.knowledgeOptionSelect" ng-change="onFieldChange(c.knowledgeOptionSelect)">
+             <option value selected class="form-control">None</option>
+             <option value="read_knowledge" ng-model="read_knowledge" class="form-control">Read Knowledge</option>
+             <option value="read_knowledge_and_collaborate" ng-model="read_knowledge_and_collaborate" class="form-control">Read Knowledge and Collaborate</option>
+         </select>
+     </div>
+</div>
+
+  <!-- Registration Code input-->
+  <div class="form-group" name="registrationFields" >
+    <div ng-if="c.knowledgeOptionSelect=='read_knowledge' || c.knowledgeOptionSelect=='read_knowledge_and_collaborate'">
+       <label class="col-sm-3 control-label" data-value='{{orgID}}' ng-class="{'orgID': orgID}">
+         Organisation ID</label> 
+       <div class="col-sm-6">
+      <input ng-model="c.orgID" ng-change='orgIDCheck(c.orgID)' placeholder="organisation id" class="form-control" ng-required="{{orgID}}"/>
+      
+</div>
+</div>
+  
+  <div ng-if="c.knowledgeOptionSelect=='read_knowledge'">
+ 
+    <label class="col-sm-3 control-label" data-value='{{orgName}}' ng-class="{'orgName': orgName}">
+     Organisation Name</label>
+   <div class="col-sm-6" name="orgName">
+      <input ng-model="c.orgName" ng-change='orgNameCheck(c.orgName)' placeholder="organisation name" class="form-control" ng-required='{{orgName}}'/>
+   </div>
+    </div>
+       </div>
+
+   
+         <!-- Privacy Policy & Terms conditions -->
+         <div class="form-group col-sm-12 input-group-checkbox">
+            <div class="col-sm-12 form_link" tabindex="0">
+               <label class="col-sm-3 control-label hide-label" for="checkbox_agree">Privacy Policy</label>
+               <input ng-model="c.policy" id="checkbox_agree" class="checkbox_agree" type="checkbox" name="policy">
+               I agree to the <a href="/sn_customerservice_registration_privacy_policy_doc.do" target="_blank">Privacy Policy</a>
+               and Community <a href="/sn_customerservice_registration_terms_doc.do" target="_blank">Terms and Conditions</a>
+            </div>
+         </div>
+         <input id="sitekey" type="hidden" value={{c.data.captchaSiteKey}}>
+         <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer> </script>
+         <script>
+            var onloadCallback = function() {
+                var siteKey = jQuery("#sitekey").val();
+                var captchaVerified;
+                var captchaWidget;
+                var verifyCallback = function(grc) {
+                    if ((grc == "") || (grc == undefined))
+                        captchaVerified = false;
+                    else 
+                        captchaVerified = true;
+                    jQuery("#captchaVerified").attr("value", captchaVerified);
+                    CustomEvent.fireAll('sn_csm_captcha_verified', {captchaVerified: captchaVerified, grc: grc});
+                };
+                captchaWidget = grecaptcha.render('html_element', {
+                    'sitekey': siteKey,
+                    'callback': verifyCallback,
+                    'theme': 'light',
+                    'expired-callback': captchaExpired
+                });
+            };
+            var captchaExpired = function() {
+                captchaVerified = false;
+                jQuery("#captchaVerified").attr("value", captchaVerified);
+                CustomEvent.fireAll('sn_csm_captcha_verified', {captchaVerified: captchaVerified, grc: null});
+            };
+         </script>
+         <!-- Google Recaptcha -->
+         <div ng-if="data.enableCaptcha == 'true'" id="captcha_form_group" class="form-group">
+            <input ng-model="c.captchaVerified" type="checkbox" name="captchaVerified" id="captchaVerified" style="display:none;" class="form-control">
+            <label class="col-sm-3 control-label">${Security Code}</label>
+            <span class="col-sm-9">
+      <form action="?" method="POST">
+      <div class="g-recaptcha" id="html_element"></div>
+      <span class="help-block" id="retype_captcha"></span>
+      </form>
+      </span>
+      </div>
+      <div>
+         <button type="submit" ng-disabled="data.status == 'success' || c.showSubmit()" ng-click="c.action()" class="btn btn-primary">${Submit}</button>
+      </div>
+      </form>
+   </div>
+</div>
+    

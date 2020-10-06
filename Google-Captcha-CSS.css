@@ -1,0 +1,18 @@
+.form_link a {
+  color: -webkit-link;
+  text-decoration: underline
+}
+
+input[type="checkbox"]:focus, .form_link a:focus {
+  outline: auto -webkit-focus-ring-color !important
+}
+
+.hide-label{
+  visibility: hidden;
+}
+
+
+label[data-value='true']:before{
+   content:" *";
+    color: red;
+}
